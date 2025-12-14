@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">First Project</string>
+    <string name="title_activity_profile">ProfileActivity</string>
+    <string name="title_activity_dashboard">DashboardActivity</string>
+    <string name="title_activity_profile2">ProfileActivity2</string>
+    <string name="title_activity_login_profile">LoginProfile</string>
+    <string name="title_activity_registration">RegistrationActivity</string>
+    <string name="title_activity_card">CardActivity</string>
+    <string name="title_activity_drop_down">DropDown</string>
+    <string name="title_activity_splash">SplashActivity</string>
+    <string name="title_activity_forgot_pass">ForgotPassActivity</string>
 </resources>
