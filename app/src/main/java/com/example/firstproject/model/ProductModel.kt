@@ -1,11 +1,18 @@
 package com.example.firstproject.model
 
 data class ProductModel(
-// val id = ref.push().key.toString()
-    val productName: String = "",
-    val productDescription: String = "",
-    val productPrice: String = "",
-    val productImageUrl: String = "",
-    val productCategory: String = "",
-
-)
+    var productId : String = "",
+    var name : String = "",
+    var price: Double = 0.0,
+    var description : String = "",
+    var categoryId: String=""
+){
+    fun toMap(): Map<String, Any?>{
+        return mapOf(
+            "name" to name,
+            "price" to price,
+            "description" to description,
+            "categoryId" to categoryId,
+        )
+    }
+}
