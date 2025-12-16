@@ -9,4 +9,5 @@
     <string name="title_activity_drop_down">DropDown</string>
     <string name="title_activity_splash">SplashActivity</string>
     <string name="title_activity_forgot_pass">ForgotPassActivity</string>
+    <string name="title_activity_add_product">AddProductActivity</string>
 </resources>

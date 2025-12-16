@@ -12,6 +12,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FirstProject">
         <activity
+            android:name=".view.AddProductActivity"
+            android:exported="false"
+            android:label="@string/title_activity_add_product"
+            android:theme="@style/Theme.FirstProject" />
+        <activity
             android:name=".view.ForgotPassActivity"
             android:exported="true"
             android:label="@string/title_activity_forgot_pass"
