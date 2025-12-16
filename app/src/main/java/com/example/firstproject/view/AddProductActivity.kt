@@ -12,7 +12,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Blue
@@ -38,14 +37,15 @@ fun AddProductBody() {
     val context = LocalContext.current
     val productViewModel = remember { ProductViewModel(ProductRepoImpl()) }
 
-    var productName by remember { mutableStateOf("") }
-    var productPrice by remember { mutableStateOf("") }
-    var productDescription by remember { mutableStateOf("") }
-
-    val products by productViewModel.allProducts.observeAsState(emptyList())
+    var email by remember { mutableStateOf("") }
+    var products by remember { mutableStateOf(listOf<com.example.firstproject.model.ProductModel>()) }
 
     LaunchedEffect(Unit) {
         productViewModel.getAllProduct()
+    }
+
+    productViewModel.allProducts.observeForever {
+        it?.let { list -> products = list }
     }
 
     Scaffold { padding ->
@@ -53,175 +53,80 @@ fun AddProductBody() {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(horizontal = 15.dp)
         ) {
             item {
-                Text(
-                    text = "Add Product",
-                    style = MaterialTheme.typography.headlineMedium
-                )
+                Text(text = "Add Product")
                 Spacer(modifier = Modifier.height(20.dp))
 
-                // Product Name Field
-                OutlinedTextField(
-                    value = productName,
-                    onValueChange = { productName = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(15.dp),
-                    label = { Text("Product Name") },
-                    placeholder = { Text("Enter product name") },
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = PurpleGrey80,
-                        unfocusedContainerColor = PurpleGrey80,
-                        focusedIndicatorColor = Blue,
-                        unfocusedIndicatorColor = Color.Transparent
+                repeat(3) {
+                    OutlinedTextField(
+                        value = email,
+                        onValueChange = { email = it },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 15.dp),
+                        shape = RoundedCornerShape(15.dp),
+                        placeholder = { Text("abc@gmail.com") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = PurpleGrey80,
+                            unfocusedContainerColor = PurpleGrey80,
+                            focusedIndicatorColor = Blue,
+                            unfocusedIndicatorColor = Color.Transparent
+                        )
                     )
-                )
-                Spacer(modifier = Modifier.height(15.dp))
-
-                // Product Price Field
-                OutlinedTextField(
-                    value = productPrice,
-                    onValueChange = { productPrice = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(15.dp),
-                    label = { Text("Product Price") },
-                    placeholder = { Text("Enter price") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = PurpleGrey80,
-                        unfocusedContainerColor = PurpleGrey80,
-                        focusedIndicatorColor = Blue,
-                        unfocusedIndicatorColor = Color.Transparent
-                    )
-                )
-                Spacer(modifier = Modifier.height(15.dp))
-
-                // Product Description Field
-                OutlinedTextField(
-                    value = productDescription,
-                    onValueChange = { productDescription = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(15.dp),
-                    label = { Text("Product Description") },
-                    placeholder = { Text("Enter description") },
-                    minLines = 3,
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = PurpleGrey80,
-                        unfocusedContainerColor = PurpleGrey80,
-                        focusedIndicatorColor = Blue,
-                        unfocusedIndicatorColor = Color.Transparent
-                    )
-                )
-                Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
+                }
 
                 Button(
                     onClick = {
-                        if (productName.isBlank() || productPrice.isBlank()) {
-                            Toast.makeText(
-                                context,
-                                "Please fill in name and price",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            return@Button
-                        }
-
-                        val price = productPrice.toDoubleOrNull()
-                        if (price == null) {
-                            Toast.makeText(
-                                context,
-                                "Invalid price format",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            return@Button
-                        }
-
                         val product = com.example.firstproject.model.ProductModel(
-                            name = productName,
-                            price = price,
-                            description = productDescription
+                            name = email,
+                            price = 0.0,
+                            description = ""
                         )
                         productViewModel.addProduct(product) { success, msg ->
                             if (success) {
                                 Toast.makeText(context, "Product Added", Toast.LENGTH_SHORT).show()
-                                productName = ""
-                                productPrice = ""
-                                productDescription = ""
+                                email = ""
                                 productViewModel.getAllProduct()
                             } else {
                                 Toast.makeText(context, "Error: $msg", Toast.LENGTH_SHORT).show()
                             }
                         }
                     },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 15.dp)
                 ) {
                     Text("Add Product")
                 }
 
-                Spacer(modifier = Modifier.height(30.dp))
-                Text(
-                    text = "Existing Products",
-                    style = MaterialTheme.typography.headlineSmall
-                )
+                Spacer(modifier = Modifier.height(20.dp))
+                Text("Existing Products")
                 Spacer(modifier = Modifier.height(10.dp))
             }
 
+
             items(products) { product ->
-                Card(
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 5.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                        .padding(horizontal = 15.dp, vertical = 5.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(12.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = product.name,
-                                style = MaterialTheme.typography.titleMedium
-                            )
-                            Text(
-                                text = "$${product.price}",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = Color.Gray
-                            )
-                            if (product.description.isNotBlank()) {
-                                Text(
-                                    text = product.description,
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = Color.Gray
-                                )
+                    Text(product.name)
+                    Button(onClick = {
+                        productViewModel.deleteProduct(product.productId) { success, msg ->
+                            if (success) {
+                                Toast.makeText(context, "Deleted ${product.name}", Toast.LENGTH_SHORT).show()
+                                productViewModel.getAllProduct()
+                            } else {
+                                Toast.makeText(context, "Error: $msg", Toast.LENGTH_SHORT).show()
                             }
                         }
-                        Button(
-                            onClick = {
-                                productViewModel.deleteProduct(product.productId) { success, msg ->
-                                    if (success) {
-                                        Toast.makeText(
-                                            context,
-                                            "Deleted ${product.name}",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                        productViewModel.getAllProduct()
-                                    } else {
-                                        Toast.makeText(
-                                            context,
-                                            "Error: $msg",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
-                                }
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.error
-                            )
-                        ) {
-                            Text("Delete")
-                        }
+                    }) {
+                        Text("Delete")
                     }
                 }
             }
